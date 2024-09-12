@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+  const navigate = useNavigate("");
   const [formData, setFormData] = useState({
+    name: '',
+    username: '',  // Added username field
     email: '',
     password: '',
     confirmPassword: '',
     country: 'India',
-    ageConsent: false
+    ageConsent: false,
   });
+
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -17,10 +24,45 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add form submission logic here
-    console.log(formData);
+
+    // Check if password and confirmPassword match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    // Create the data to send to the API
+    const dataToSend = {
+      name: formData.name,
+      username: formData.username,  // Include username in data
+      email: formData.email,
+      password: formData.password,
+      country: formData.country,
+    };
+
+    try {
+      const response = await fetch('http://localhost:5000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setSuccess("Account created successfully!");
+        setError(null);
+        navigate("/login");
+      } else {
+        setError(result.message || "Something went wrong");
+      }
+    } catch (err) {
+      setError("Error occurred while signing up");
+    }
   };
 
   return (
@@ -30,6 +72,40 @@ const Signup = () => {
         className="bg-gray-800 p-8 rounded-lg shadow-lg w-96 text-white"
       >
         <h2 className="text-2xl font-bold mb-6">Create Your Account</h2>
+
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {success && <p className="text-green-500 mb-4">{success}</p>}
+
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-sm mb-2">
+            Full Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+            required
+          />
+        </div>
+
+        {/* Username field */}
+        <div className="mb-4">
+          <label htmlFor="username" className="block text-sm mb-2">
+            Username
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+            required
+          />
+        </div>
 
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm mb-2">

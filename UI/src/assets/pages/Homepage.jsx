@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar'
 import GameDisplay from '../components/GameDisplay'
 import Populargame from '../components/Populargame'
 import Footer from '../components/Footer'
+import Store from '../components/Store'
 
 
 function Homepage() {
@@ -18,6 +19,7 @@ function Homepage() {
      <div>
      <GameDisplay/>
      <Populargame/>
+     <Store/>
      </div>
      </div>
      <Footer/>

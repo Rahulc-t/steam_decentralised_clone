@@ -12,7 +12,8 @@ const usersDetails=new Schema({
     email:{type:String,required:true,unique:true},
     password:{type:String,required:true},
     country:{type:String},
-    userType:{type:String}
+    username:{type:String,required:true,unique:true},
+    userType:{type:String},
     
 
 

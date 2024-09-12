@@ -8,8 +8,8 @@ const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 5000;
-// const userRouter = require('./routes/UserRoutes');
-// const adminRouter = require('./routes/AdminRoutes');
+ const userRouter = require('./routes/UserRoutes');
+ const adminRouter = require('./routes/AdminRoutes');
 const authRouter=require("./routes/AuthRoutes")
 
 // Middleware
@@ -19,8 +19,8 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
-// app.use('/user', userRouter);
-// app.use('/admin', adminRouter);
+app.use('/user', userRouter);
+app.use('/admin', adminRouter);
 app.use("/auth",authRouter)
 
 // Connect to MongoDB using environment variable
