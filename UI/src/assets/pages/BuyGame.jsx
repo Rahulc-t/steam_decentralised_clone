@@ -68,7 +68,7 @@ const ViewGame = () => {
     try {
     //   const priceInWei = ethers.utils.parseEther(game.game_price.toString()); // Convert price to wei
 
-      const tx = await contract.buyGame(id, { value: game.game_price.toString() });
+      const tx = await contract.buyGame(id, { value: game.game_price});
       await tx.wait(); // Wait for transaction confirmation
 
       alert('Game purchased successfully!');
