@@ -12,18 +12,18 @@ const Sidebar = () => {
       </div>
 
       {/* Recently Viewed */}
-      <div className="space-y-1">
+      {/* <div className="space-y-1">
         <h3 className="text-gray-400 text-sm">RECENTLY VIEWED</h3>
         <p className="text-sm hover:text-blue-500 cursor-pointer">Roboquest</p>
-      </div>
+      </div> */}
 
       {/* Recommended */}
-      <div className="space-y-1">
+      {/* <div className="space-y-1">
         <h3 className="text-gray-400 text-sm">RECOMMENDED</h3>
         <p className="text-sm hover:text-blue-500 cursor-pointer">By Friends</p>
         <p className="text-sm hover:text-blue-500 cursor-pointer">By Curators</p>
         <p className="text-sm hover:text-blue-500 cursor-pointer">Tags</p>
-      </div>
+      </div> */}
 
       {/* Browse Categories */}
       <div className="space-y-1">

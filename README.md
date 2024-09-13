@@ -72,16 +72,16 @@ Make sure your MetaMask wallet is connected and has enough Ether for transaction
 
 ### Updates for september 14th
 
-1. **Refine UI/UX Code**
-   - Improve the user interface and user experience.
-
-2. **Implement Image Insertion**
+1. **Implement Image Insertion**
    - Allow for the insertion and display of images within the application.
 
-### Additional Update
+### Future Update
 
 - **Implement Badge Distribution Using NFT Technology**
-  - Add functionality for distributing badges using NFT technology. 
+  - Add functionality for distributing badges using NFT technology.
+
+- **Implement Category System to Sort Games**
+
 
 
 

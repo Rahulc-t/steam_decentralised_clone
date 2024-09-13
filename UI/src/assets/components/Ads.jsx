@@ -22,9 +22,9 @@ const Ads = () => {
           <a href="#" className="hover:text-blue-400 hover:underline text-lg">Your Store</a>
           <a href="#" className="hover:text-blue-400 hover:underline text-lg">New & Noteworthy</a>
           <a href="#" className="hover:text-blue-400 hover:underline text-lg">Categories</a>
-          <a href="#" className="hover:text-blue-400 hover:underline text-lg">Points Shop</a>
+          <a href="/profile" className="hover:text-blue-400 hover:underline text-lg">Profile</a>
           <a href="#" className="hover:text-blue-400 hover:underline text-lg">News</a>
-          <a href="#" className="hover:text-blue-400 hover:underline text-lg">Labs</a>
+          {/* <a href="#" className="hover:text-blue-400 hover:underline text-lg">Labs</a> */}
         </div>
 
         {/* Main Content */}

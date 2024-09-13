@@ -13,17 +13,20 @@ import ViewGames from './assets/pages/ViewGames';
 import EditGame from './assets/pages/EditGame';
 import ViewGame from './assets/pages/BuyGame';
 import Transactions from './assets/pages/Transactions';
+import AuthLayout from './assets/layout/AuthLayout';
 
 function App() {
   // const [count, setCount] = useState(0);
   const router=createBrowserRouter(createRoutesFromElements( 
     <>
+    <Route path="/" element={<AuthLayout/>}>
+      <Route path="/login" element={<Loginpage/>}/>
+      <Route path="/signup" element={<SiginupPage/>}/>
+    </Route>
     <Route path="/" element={<Userlayout />} >
       {/* <Route path="/" element={<Homepage/>} /> */}
-      <Route path ="/login" element={<Loginpage/>}/>
       <Route path="/profile" element={<Profilepage/>}/>
       <Route path="/aboutme" element={<Aboutme/>}/>
-      <Route path="/signup" element={<SiginupPage/>}/>
       <Route path="/store" element={<Homepage/>}/>
       <Route path="/viewgame/:id" element={<ViewGame/>}/>
       </Route>

@@ -3,13 +3,13 @@ import React from 'react';
 const Footer = () => {
   return (
     <div className="bg-[#1b2838] text-gray-400 py-8">
-      {/* Top Section */}
+      {/* Top Section
       <div className="text-center">
         <p className="text-xl text-white">Looking for recommendations?</p>
         <p className="text-sm mt-2">Sign in to view personalized recommendations</p>
         <a href=""> <button className="bg-[#5c7e10] text-white py-2 px-6 mt-4 rounded-md">Sign In</button></a>
         <p className="text-sm mt-4">Or <span className="text-blue-500">sign up</span> and join Steam for free</p>
-      </div>
+      </div> */}
 
       {/* Divider */}
       <div className="border-t border-gray-700 my-8"></div>
