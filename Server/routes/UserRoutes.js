@@ -109,6 +109,12 @@ router.get('/checkPurchase/:id', verifyToken, async (req, res) => {
   }
 });
 
+router.get("/transaction",verifyToken,async(req,res)=>{
+  console.log("test")
+  const data=await Transaction.find()
+  res.json(data)
+  })
+
 // router.get('/profile', verifyToken, async (req, res) => {
 //   const userEmail = req.email; // Extract the email from the verified token
   

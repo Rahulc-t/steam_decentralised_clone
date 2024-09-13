@@ -27,7 +27,7 @@ const AdminPage = () => {
 
                     <button
                         className="w-full bg-yellow-600 text-white font-bold py-2 px-4 rounded-md hover:bg-yellow-700 transition-colors duration-300"
-                        onClick={() => navigate('/viewtransactions')}
+                        onClick={() => navigate('/transactions')}
                     >
                         View Transactions
                     </button>

@@ -12,6 +12,7 @@ import AddGame from './assets/pages/AddGame';
 import ViewGames from './assets/pages/ViewGames';
 import EditGame from './assets/pages/EditGame';
 import ViewGame from './assets/pages/BuyGame';
+import Transactions from './assets/pages/Transactions';
 
 function App() {
   // const [count, setCount] = useState(0);
@@ -34,6 +35,7 @@ function App() {
   <Route path="/addgame" element={<AddGame/>}/>
   <Route path="/viewgames" element={<ViewGames/>}/>
   <Route path="/editgames/:id" element={<EditGame/>}/>
+  <Route path="/transactions" element={<Transactions/>}/>
 
 </Route>
 

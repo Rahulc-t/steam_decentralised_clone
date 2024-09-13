@@ -78,12 +78,6 @@ Make sure your MetaMask wallet is connected and has enough Ether for transaction
 2. **Implement Image Insertion**
    - Allow for the insertion and display of images within the application.
 
-3. **Implement Transaction Report**
-   - Develop a feature to view transaction reports.
-
-4. **Implement User Libraries**
-   - Develop a feature for user to see all purchased games
-
 ### Additional Update
 
 - **Implement Badge Distribution Using NFT Technology**
