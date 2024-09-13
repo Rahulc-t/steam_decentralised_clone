@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const Store = () => {
   const [games, setGames] = useState([]);
   const [error, setError] = useState(null);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch all games from the server
@@ -14,8 +14,8 @@ const Store = () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `${localStorage.getItem('token')}` // Use your token mechanism
-          }
+            'Authorization': `${localStorage.getItem('token')}`, // Use your token mechanism
+          },
         });
 
         if (response.ok) {
@@ -34,30 +34,32 @@ const Store = () => {
   }, []);
 
   const handleBuy = (gameId) => {
-    navigate(`/viewgame/${gameId}`)
+    navigate(`/viewgame/${gameId}`);
     // Add your logic here to handle the game purchase
   };
 
   return (
-    <div className=" w-[1700px] h-full bg-[#1b2838] items-center p-6">
-      <h1 className="text-4xl font-bold text-center text-white mb-10">Game Store</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {error && <p className="text-red-500 text-center">{error}</p>}
-
+    <div className="min-h-screen bg-[#1b2838] py-12 flex flex-col items-center w-[1700px]">
+      <h1 className="text-5xl font-extrabold text-white mb-12">Game Store</h1>
+      
+      {error && <p className="text-red-500 text-center mb-6">{error}</p>}
+      
+      <div className="w-full max-w-6xl flex flex-col gap-8">
         {games.map((game) => (
           <div
             key={game.game_Id}
-            className="bg-gray-800 text-white p-6 rounded-lg shadow-lg flex flex-col justify-between"
+            className="bg-gray-900 hover:bg-gray-800 text-white p-8 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out flex flex-col sm:flex-row justify-between items-center"
           >
-            <h2 className="text-2xl font-bold mb-4">{game.game_name}</h2>
-            <p className="text-gray-300 mb-4">{game.game_description}</p>
-            <p className="text-lg font-semibold mb-4">Price: ${game.game_price}</p>
-
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="text-3xl font-bold mb-4">{game.game_name}</h2>
+              <p className="text-gray-400 mb-4">{game.game_description}</p>
+              <p className="text-xl font-semibold">Price: ${game.game_price}</p>
+            </div>
             <button
               onClick={() => handleBuy(game.game_Id)}
-              className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300"
+              className="mt-6 sm:mt-0 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 transition duration-300 ease-in-out"
             >
-              Buy
+              Buy Now
             </button>
           </div>
         ))}

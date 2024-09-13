@@ -20,5 +20,6 @@ const usersDetails=new Schema({
 
 })
 
+
 const userDetails=model('userdetails',usersDetails);
 module.exports=userDetails;

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { ethers } from 'ethers'; // Import ethers
-import { GameModuleGameStore } from "../../scdata/deployed_addresses.json"; // Import deployed addresses
-import { abi } from '../../scdata/GameStore.json'; // Import ABI file
+import { ethers } from 'ethers';
+import { GameModuleGameStore } from "../../scdata/deployed_addresses.json";
+import { abi } from '../../scdata/GameStore.json';
 
 const ViewGame = () => {
   const { id } = useParams(); // Get the game ID from the route
@@ -10,6 +10,7 @@ const ViewGame = () => {
   const [error, setError] = useState(null);
   const [account, setAccount] = useState('');
   const [contract, setContract] = useState(null);
+  const [hasPurchased, setHasPurchased] = useState(false); // State to track purchase status
 
   useEffect(() => {
     // Fetch the game data by ID
@@ -38,12 +39,42 @@ const ViewGame = () => {
     fetchGame();
   }, [id]);
 
+  // Check if the user has already purchased the game
+  const checkPurchaseStatus = async () => {
+    try {
+        console.log("1")
+      const response = await fetch(`http://localhost:5000/user/checkPurchase/${id}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+          'Authorization': `${localStorage.getItem('token')}`,
+        },
+      });
+      console.log("2")
+      
+      const data = await response.json();
+      if (data.hasPurchased) {
+        setHasPurchased(true);
+      }
+    } catch (err) {
+      console.error('Error checking purchase status', err);
+      setError('Error checking purchase status');
+    }
+  };
+
+  // Call the function to check purchase status once MetaMask is connected
+  useEffect(() => {
+    if (account) {
+      checkPurchaseStatus();
+    }
+  }, [account]);
+
   // MetaMask connection and initialize ethers
   const connectMetaMask = async () => {
     if (window.ethereum) {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner(); 
+        const signer = await provider.getSigner();
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setAccount(accounts[0]);
 
@@ -58,7 +89,7 @@ const ViewGame = () => {
     }
   };
 
-  // Function to buy game
+  // Function to buy game and save transaction
   const buyGame = async () => {
     if (!contract || !account) {
       setError('Please connect to MetaMask first');
@@ -66,12 +97,28 @@ const ViewGame = () => {
     }
 
     try {
-    //   const priceInWei = ethers.utils.parseEther(game.game_price.toString()); // Convert price to wei
-
-      const tx = await contract.buyGame(id, { value: game.game_price});
+      // Perform the blockchain transaction
+      const tx = await contract.buyGame(id, { value: game.game_price });
       await tx.wait(); // Wait for transaction confirmation
 
+      const transactionId = tx.hash; // Get the transaction ID from the blockchain
+
+      // Call backend API to save transaction details
+      await fetch('http://localhost:5000/user/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token'), // Pass the token for authentication
+        },
+        body: JSON.stringify({
+          gameName: game.game_name,
+          gamePrice: game.game_price,
+          transactionId: transactionId // Store transaction hash from blockchain
+        })
+      });
+
       alert('Game purchased successfully!');
+      setHasPurchased(true); // Update state to reflect the purchase
     } catch (err) {
       console.error('Error purchasing game:', err);
       setError('Error purchasing game');
@@ -94,12 +141,20 @@ const ViewGame = () => {
           {account ? (
             <div>
               <p className="text-green-500 mb-4">Connected Account: {account}</p>
-              <button
-                onClick={buyGame}
-                className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300"
-              >
-                Buy Game
-              </button>
+              {hasPurchased ? (
+                <button
+                  className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300"
+                >
+                  Play Game
+                </button>
+              ) : (
+                <button
+                  onClick={buyGame}
+                  className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-300"
+                >
+                  Buy Game
+                </button>
+              )}
             </div>
           ) : (
             <button

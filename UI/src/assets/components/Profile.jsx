@@ -2,10 +2,16 @@ import React, { useEffect, useState } from 'react';
 import avatar from '../images/avatar.jpg'; // Ensure this image exists in your directory
 
 const Profile = () => {
-  const [userDetails, setUserDetails] = useState({});
+  const [userDetails, setUserDetails] = useState({
+    username: '',
+    name: '',
+    email: '',
+    badges: 0
+  });
+  const [games, setGames] = useState([]); // Store purchased games
   const [loading, setLoading] = useState(true);
 
-  // Fetch user details from the API
+  // Fetch user profile and games from the API
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -13,11 +19,14 @@ const Profile = () => {
           method: 'GET',
           headers: {
             Authorization: `${localStorage.getItem('token')}`, // Assuming token is stored in localStorage
-            // 'Content-Type': 'application/json'
           },
         });
         const data = await response.json();
-        setUserDetails(data);
+
+        // Set the user details and games
+        setUserDetails(data.user); // Data returned by the backend for user details
+        setGames(data.games); // Data returned by the backend for games
+
         setLoading(false);
       } catch (err) {
         console.error("Error fetching profile data", err);
@@ -46,7 +55,6 @@ const Profile = () => {
             <h1 className="text-3xl font-bold">{userDetails.username || 'Username'}</h1>
             <p className="text-gray-400">{userDetails.name || 'User Name'}</p>
             <p className="text-gray-500 mt-2">{userDetails.email || 'email@example.com'}</p>
-            <p className="text-sm mt-4">Bio: {userDetails.bio || 'This is your bio.'}</p>
           </div>
         </div>
       </div>
@@ -54,25 +62,24 @@ const Profile = () => {
       {/* My Games Section */}
       <div className="bg-gray-800 p-6 rounded-md shadow-lg mb-8">
         <h2 className="text-lg font-semibold mb-4">My Games</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {userDetails.games && userDetails.games.length > 0 ? (
-            userDetails.games.map((game, index) => (
+        <div className="flex flex-col space-y-4"> {/* Changed to flex-col to stack games vertically */}
+          {games.length > 0 ? (
+            games.map((game, index) => (
               <div key={index} className="flex justify-between items-center bg-gray-700 p-4 rounded-md">
                 <div className="flex items-center">
                   <img
                     src={game.image || "https://via.placeholder.com/80"} // Replace with game image URL
-                    alt={game.name}
+                    alt={game.gameName}
                     className="w-16 h-16 rounded-md"
                   />
                   <div className="ml-4">
-                    <h3 className="font-bold">{game.name}</h3>
-                    <p className="text-sm text-gray-400">{game.playtime} hrs on record</p>
-                    <p className="text-xs text-gray-500">Last played on {game.lastPlayed}</p>
+                    <h3 className="font-bold">{game.gameName}</h3>
+                    <p className="text-sm text-gray-400">Price: {game.gamePrice} ETH</p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Achievement Progress</p>
-                  <p className="text-gray-400">{game.achievements} of {game.totalAchievements}</p>
+                  <p className="text-sm text-gray-400">Transaction ID</p>
+                  <p className="text-gray-400">{game.transactionId}</p>
                 </div>
               </div>
             ))
@@ -91,7 +98,7 @@ const Profile = () => {
             <p className="text-sm text-gray-400">Badges</p>
           </div>
           <div className="bg-gray-700 p-4 rounded-md text-center">
-            <p className="text-2xl font-bold">{userDetails.games?.length || 0}</p>
+            <p className="text-2xl font-bold">{games.length}</p>
             <p className="text-sm text-gray-400">Games</p>
           </div>
         </div>
