@@ -4,7 +4,7 @@ import Logout from '../components/Logout'; // Import your Logout component
 import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // Check for token in localStorage
@@ -27,9 +27,14 @@ const Navbar = () => {
       {/* Center - Navigation Links */}
       <div className="flex space-x-8 justify-center items-center">
         <a href="/store" className="hover:text-blue-500 hover:underline text-lg">STORE</a>
-        <a href="#" className="hover:text-blue-500 hover:underline text-lg">COMMUNITY</a>
-        <a href="#" className="hover:text-blue-500 hover:underline text-lg">ABOUT</a>
-        <a href="#" className="hover:text-blue-500 hover:underline text-lg">SUPPORT</a>
+        {/* <a href="#" className="hover:text-blue-500 hover:underline text-lg">COMMUNITY</a> */}
+        <a href="/aboutme" className="hover:text-blue-500 hover:underline text-lg">ABOUT</a>
+        {/* <a href="#" className="hover:text-blue-500 hover:underline text-lg">SUPPORT</a> */}
+
+        {/* Conditionally render Profile if user is logged in */}
+        {isLoggedIn && (
+          <a href="/profile" className="hover:text-blue-500 hover:underline text-lg">PROFILE</a>
+        )}
       </div>
 
       {/* Right Side - Login/Logout and Language Options */}

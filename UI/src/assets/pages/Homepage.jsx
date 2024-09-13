@@ -17,8 +17,8 @@ function Homepage() {
      <div className='flex'>
      <Sidebar/>
      <div>
-     <GameDisplay/>
-     <Populargame/>
+     {/* <GameDisplay/> */}
+     {/* <Populargame/> */}
      <Store/>
      </div>
      </div>

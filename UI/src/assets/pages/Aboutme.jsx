@@ -8,7 +8,7 @@ function Aboutme() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <AboutmeIntro/>
       <Footer/>
 

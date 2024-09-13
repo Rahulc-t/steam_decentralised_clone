@@ -15,6 +15,7 @@ import img13 from "../images/capsule_231x87(12).jpg";
 import img14 from "../images/capsule_231x87(13).jpg";
 import img15 from "../images/capsule_231x87(14).jpg";
 import img16 from "../images/capsule_231x87(15).jpg";
+import { Link } from 'react-router-dom';
 
 const AboutmeIntro = () => {
   return (
@@ -35,9 +36,9 @@ const AboutmeIntro = () => {
             With nearly 30,000 games from AAA to indie and everything in-between. Enjoy exclusive deals,
             automatic game updates, and other great perks.
           </p>
-          <button className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded transition duration-300">
+         <Link to="/store"> <button className="bg-blue-500 hover:bg-blue-600 px-6 py-2 rounded transition duration-300">
             Browse the Store →
-          </button>
+          </button></Link>
         </div>
         <div className="grid grid-cols-4 gap-6 mt-8">
           {[
