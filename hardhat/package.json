@@ -1,5 +1,5 @@
 {
-  "name": "steam",
+  "name": "hardhat",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,6 @@
   "description": "",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "hardhat": "^2.22.10"
+    "hardhat": "^2.22.11"
   }
 }

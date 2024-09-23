@@ -70,7 +70,7 @@ Make sure your MetaMask wallet is connected and has enough Ether for transaction
 
 ## Scheduled Updates
 
-### Updates for september 14th
+### Updates for september 
 
 1. **Implement Image Insertion**
    - Allow for the insertion and display of images within the application.

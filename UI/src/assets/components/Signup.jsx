@@ -56,7 +56,7 @@ const Signup = () => {
       if (response.ok) {
         setSuccess("Account created successfully!");
         setError(null);
-        navigate("/login");
+        navigate("/");
       } else {
         setError(result.message || "Something went wrong");
       }
