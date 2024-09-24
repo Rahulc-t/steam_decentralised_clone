@@ -6,14 +6,41 @@ import { useNavigate } from 'react-router-dom';
 const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isMetaMaskConnected, setIsMetaMaskConnected] = useState(false);
 
-  // Check for token in localStorage
+  // Check for token in localStorage and MetaMask connection
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
+    }
+
+    const checkMetaMaskConnection = async () => {
+      if (window.ethereum) {
+        try {
+          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          if (accounts.length > 0) {
+            setIsMetaMaskConnected(true);
+          } else {
+            setIsMetaMaskConnected(false);
+          }
+        } catch (error) {
+          console.error('Error checking MetaMask connection:', error);
+        }
+      }
+    };
+
+    checkMetaMaskConnection();
+
+    // Listen for account changes (if user connects/disconnects MetaMask)
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length > 0) {
+          setIsMetaMaskConnected(true);
+        } else {
+          setIsMetaMaskConnected(false);
+        }
+      });
     }
   }, []);
 
@@ -27,11 +54,7 @@ const Navbar = () => {
       {/* Center - Navigation Links */}
       <div className="flex space-x-8 justify-center items-center">
         <a href="/store" className="hover:text-blue-500 hover:underline text-lg">STORE</a>
-        {/* <a href="#" className="hover:text-blue-500 hover:underline text-lg">COMMUNITY</a> */}
         <a href="/aboutme" className="hover:text-blue-500 hover:underline text-lg">ABOUT</a>
-        {/* <a href="#" className="hover:text-blue-500 hover:underline text-lg">SUPPORT</a> */}
-
-        {/* Conditionally render Profile if user is logged in */}
         {isLoggedIn && (
           <a href="/profile" className="hover:text-blue-500 hover:underline text-lg">PROFILE</a>
         )}
@@ -39,11 +62,11 @@ const Navbar = () => {
 
       {/* Right Side - Login/Logout and Language Options */}
       <div className="flex items-start space-x-2 mt-2">
-        {isLoggedIn ? (
-          // Show Logout component if user is logged in
+        {isLoggedIn || isMetaMaskConnected ? (
+          // Show Logout component if user is logged in or MetaMask is connected
           <Logout />
         ) : (
-          // Show Login link if user is not logged in
+          // Show Login link if user is not logged in or MetaMask is not connected
           <a href="/login" className="hover:text-gray-300 text-sm">login</a>
         )}
         <span className="text-sm">|</span>

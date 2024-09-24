@@ -23,6 +23,7 @@ const ViewGame = () => {
       setContract(contractInstance);
 
       const gameData = await contractInstance.getGame(id); // Fetch the game from blockchain
+      console.log(gameData)
       setGame({
         gameName: gameData[0],
         gameStudio: gameData[1],
@@ -36,32 +37,29 @@ const ViewGame = () => {
     }
   };
 
-  // Function to check if the user has already purchased the game
-  const checkPurchaseStatus = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/user/checkPurchase/${id}`, {
-        method: 'GET',
-        headers: {
-          Authorization: `${localStorage.getItem('token')}`, // Add authentication token if needed
-        },
-      });
+  // Function to check if the user has already purchased the game using the blockchain
+  const checkPurchaseStatusOnBlockchain = async () => {
+    if (!contract || !account) return;
 
-      const data = await response.json();
-      if (response.ok) {
-        setHasPurchased(data.hasPurchased);
-      } else {
-        console.error('Error checking purchase status:', data.message);
-      }
+    try {
+      const hasUserPurchased = await contract.hasPurchased(id, account);
+      setHasPurchased(hasUserPurchased); // Update the state based on the result
     } catch (err) {
-      console.error('Error checking purchase status:', err);
+      console.error('Error checking purchase status on blockchain:', err);
     }
   };
 
-  // Call fetchGameFromBlockchain and checkPurchaseStatus when component loads
+  // Call fetchGameFromBlockchain when component loads
   useEffect(() => {
     fetchGameFromBlockchain();
-    checkPurchaseStatus(); // Check if the game has been purchased
   }, [id]);
+
+  // Check purchase status whenever contract and account are available
+  useEffect(() => {
+    if (contract && account) {
+      checkPurchaseStatusOnBlockchain();
+    }
+  }, [contract, account]);
 
   const connectMetaMask = async () => {
     if (window.ethereum) {
@@ -95,46 +93,11 @@ const ViewGame = () => {
       });
 
       await tx.wait(); // Wait for transaction confirmation
-      const transactionId = tx.hash; // Use the transaction hash as the ID
       alert('Game purchased successfully!');
-
-      // Save the transaction to the database
-      saveTransactionToDB(transactionId);
-
       setHasPurchased(true); // Update state to reflect the purchase
     } catch (err) {
       console.error('Error purchasing game:', err);
       setError('Error purchasing game');
-    }
-  };
-
-  // Function to save transaction to the database
-  const saveTransactionToDB = async (transactionId) => {
-    try {
-      const response = await fetch('http://localhost:5000/user/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `${localStorage.getItem('token')}`, // Use your auth token if required
-        },
-        body: JSON.stringify({
-          gameId:id,
-          gameName: game.gameName,
-          gamePrice: game.gamePrice.toString(), // Convert BigInt to string here
-          transactionId: transactionId,
-          imageurl: game.imageUrl,
-          gameDescription: game.gameDescription,
-        }),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        console.log('Transaction saved successfully:', data);
-      } else {
-        console.error('Failed to save transaction:', data.message);
-      }
-    } catch (err) {
-      console.error('Error saving transaction:', err);
     }
   };
 
@@ -154,7 +117,7 @@ const ViewGame = () => {
 
           <h2 className="text-3xl font-bold mb-4 text-white">{game.gameName}</h2>
           <p className="text-lg text-gray-400 mb-4">{game.gameDescription}</p>
-          <p className="text-xl font-semibold text-white mb-4">Price: {parseFloat(game.gamePrice)} ETH</p>
+          <p className="text-xl font-semibold text-white mb-4">Price: {parseFloat(game.gamePrice)} WEI</p>
           <p className="text-lg text-gray-400 mb-6">Studio: {game.gameStudio}</p>
 
           {account ? (

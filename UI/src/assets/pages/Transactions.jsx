@@ -10,40 +10,44 @@ const Transactions = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch transactions from the smart contract
     const fetchTransactions = async () => {
       try {
-        // Connect to the contract using ethers.js
         if (window.ethereum) {
-          // Use a provider for read-only operations (view functions)
           const provider = new ethers.BrowserProvider(window.ethereum);
           const contract = new ethers.Contract(GameModuleGameStore, abi, provider);
-
-          // Call the smart contract function to get all transactions
+  
+          // Fetch all transactions from the smart contract
           const transactionsFromContract = await contract.getAllTransactions();
-          console.log(transactionsFromContract)
-
-          // Process transactions if necessary (depending on how the contract returns the data)
-          const formattedTransactions = transactionsFromContract.map((tx) => ({
-            transactionId: tx.transactionId.toString(),
-            gameName: tx.gameName,
-            gamePrice: ethers.formatUnits(tx.gamePrice, 'ether'), // Convert price from wei to ether
-            userEmail: tx.userEmail,
-            createdAt: new Date(tx.createdAt * 1000), // Assuming createdAt is in UNIX timestamp
-          }));
-
+          console.log('Raw transactions:', transactionsFromContract);
+  
+          // Map transactions and wait for all promises to resolve
+          const formattedTransactions = await Promise.all(
+            transactionsFromContract.map(async (tx) => {
+              const game = await contract.getGame(tx[0]);
+              return {
+                gameName: game.gameName,
+                userAddress: tx[1] || 'N/A',  // User Ethereum Address (String)
+                gamePrice: tx[2] ? ethers.formatUnits(tx[2], 'ether') : '0',  // Price (BigInt converted to Ether)
+              };
+            })
+          );
+  
           setTransactions(formattedTransactions);
+          console.log("Formatted transactions:", formattedTransactions);
         } else {
           setError('MetaMask not detected');
         }
       } catch (err) {
         setError('Error fetching transactions from the blockchain');
-        console.error(err);
+        console.error('Error:', err);
       }
     };
-
+  
     fetchTransactions();
   }, []);
+  
+  
+    
 
   // Get current transactions to display on the current page
   const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -65,21 +69,22 @@ const Transactions = () => {
         <table className="w-full text-white">
           <thead>
             <tr className="bg-gray-800 text-left">
-              <th className="p-4">Transaction ID</th>
+              {/* <th className="p-4">Transaction ID</th> */}
               <th className="p-4">Game Name</th>
               <th className="p-4">Game Price</th>
-              <th className="p-4">User Email</th>
-              <th className="p-4">Date</th>
+              <th className="p-4">User Address</th>
+              {/* <th className="p-4">Date</th> */}
             </tr>
           </thead>
           <tbody>
             {currentTransactions.map((transaction) => (
-              <tr key={transaction.transactionId} className="bg-gray-700 border-b border-gray-600">
-                <td className="p-4">{transaction.transactionId}</td>
+              <tr  className="bg-gray-700 border-b border-gray-600">
+                {/* <td className="p-4">{transaction.transactionId}</td> */}
                 <td className="p-4">{transaction.gameName}</td>
+                {console.log(transaction.gameName)}
                 <td className="p-4">{transaction.gamePrice} ETH</td>
-                <td className="p-4">{transaction.userEmail}</td>
-                <td className="p-4">{transaction.createdAt.toLocaleDateString()}</td>
+                <td className="p-4">{transaction.userAddress}</td>
+                {/* <td className="p-4">{transaction.createdAt.toLocaleDateString()}</td> */}
               </tr>
             ))}
           </tbody>

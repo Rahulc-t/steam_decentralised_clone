@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 contract GameStore {
+
     struct Game {
         uint gameId;
         string gameName;
@@ -12,6 +13,7 @@ contract GameStore {
         string category; // New category field
         address payable owner;
         bool isDeleted;
+        address[] buyers; // Array to store addresses of users who bought the game
     }
 
     struct Transaction {
@@ -20,18 +22,38 @@ contract GameStore {
         uint price;
     }
 
+    struct User {
+        string username;
+        address userAddress;
+        bool isRegistered;
+    }
+
     mapping(uint => Game) public games;
     mapping(address => uint) public purchases; // Track the number of purchases per buyer
     mapping(address => Transaction[]) public userTransactions;
+    mapping(address => User) public users; // Mapping to store users
     uint public gameCount;
     Transaction[] public transactions;
+
+    address public admin; // Address of the admin
 
     event GameAdded(uint gameId, string gameName, uint gamePrice, address owner);
     event GamePurchased(uint gameId, address buyer, uint price);
     event GameEdited(uint gameId, string gameName, uint gamePrice);
     event GameDeleted(uint gameId);
+    event UserRegistered(address userAddress, string username);
 
-    // Function to add a new game with image and category
+    constructor() {
+        admin = msg.sender; // Set the deployer as the admin
+    }
+
+    // Modifier to restrict access to admin-only functions
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only the admin can perform this action");
+        _;
+    }
+
+    // Function to add a new game with image and category (restricted to admin)
     function addGame(
         string memory _gameName,
         string memory _gameStudio,
@@ -39,7 +61,7 @@ contract GameStore {
         uint _gamePrice,
         string memory _imageUrl,
         string memory _category // New category parameter
-    ) public {
+    ) public onlyAdmin {
         require(_gamePrice > 0, "Price must be greater than 0");
 
         gameCount++;
@@ -52,13 +74,14 @@ contract GameStore {
             _imageUrl,
             _category, // Set the category
             payable(msg.sender), // Game owner
-            false // isDeleted set to false initially
+            false, // isDeleted set to false initially
+            new address[](0)   // Initialize an empty array for buyers
         );
 
         emit GameAdded(gameCount, _gameName, _gamePrice, msg.sender);
     }
 
-    // Function to edit game details (only by the game owner)
+    // Function to edit game details (only by the admin)
     function editGame(
         uint _gameId,
         string memory _newGameName,
@@ -67,10 +90,9 @@ contract GameStore {
         uint _newGamePrice,
         string memory _newImageUrl,
         string memory _newCategory // Edit the category as well
-    ) public {
+    ) public onlyAdmin {
         Game storage _game = games[_gameId];
         require(_game.gameId > 0, "Game does not exist");
-        require(msg.sender == _game.owner, "Only the owner can edit the game");
         require(!_game.isDeleted, "Game has been deleted");
 
         // Update the game details
@@ -84,17 +106,36 @@ contract GameStore {
         emit GameEdited(_gameId, _newGameName, _newGamePrice);
     }
 
-    // Function to delete a game (only by the game owner)
-    function deleteGame(uint _gameId) public {
+    // Function to delete a game (only by the admin)
+    function deleteGame(uint _gameId) public onlyAdmin {
         Game storage _game = games[_gameId];
         require(_game.gameId > 0, "Game does not exist");
-        require(msg.sender == _game.owner, "Only the owner can delete the game");
         require(!_game.isDeleted, "Game has already been deleted");
 
         // Mark the game as deleted
         _game.isDeleted = true;
 
         emit GameDeleted(_gameId);
+    }
+
+    // Function to register a new user
+    function register(string memory _username) public {
+        require(!users[msg.sender].isRegistered, "User is already registered");
+
+        // Register the user
+        users[msg.sender] = User({
+            username: _username,
+            userAddress: msg.sender,
+            isRegistered: true
+        });
+
+        emit UserRegistered(msg.sender, _username);
+    }
+
+    // Function to login (in Solidity, "login" can just verify registration)
+    function login() public view returns (bool) {
+        require(users[msg.sender].isRegistered, "User is not registered");
+        return true;
     }
 
     // Function to buy a game
@@ -115,6 +156,9 @@ contract GameStore {
         // Track the number of purchases by the buyer
         purchases[msg.sender]++;
 
+        // Add the buyer's address to the game's buyers array
+        _game.buyers.push(msg.sender);
+
         emit GamePurchased(_gameId, msg.sender, msg.value);
     }
 
@@ -129,7 +173,8 @@ contract GameStore {
             uint gamePrice,
             string memory imageUrl,
             string memory category, // Return the category
-            address owner
+            address owner,
+            address[] memory buyers // Return the list of buyers
         )
     {
         Game memory _game = games[_gameId];
@@ -141,8 +186,22 @@ contract GameStore {
             _game.gamePrice,
             _game.imageUrl,
             _game.category, // Include category
-            _game.owner
+            _game.owner,
+            _game.buyers // Return the buyers array
         );
+    }
+
+    // Function to get all games bought by a certain user
+    function getUserGames(address _user) public view returns (Game[] memory) {
+        uint totalPurchased = userTransactions[_user].length;
+        Game[] memory purchasedGames = new Game[](totalPurchased);
+
+        for (uint i = 0; i < totalPurchased; i++) {
+            uint gameId = userTransactions[_user][i].gameId;
+            purchasedGames[i] = games[gameId];
+        }
+
+        return purchasedGames;
     }
 
     // Function to get all games (excluding deleted ones)

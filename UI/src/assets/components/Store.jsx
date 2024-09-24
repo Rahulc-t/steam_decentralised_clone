@@ -66,7 +66,7 @@ const Store = () => {
             <div className="flex-1 text-center sm:text-left">
               <h2 className="text-3xl font-bold mb-4">{game.gameName}</h2>
               <p className="text-gray-400 mb-4">{game.gameDescription}</p>
-              <p className="text-xl font-semibold">Price: {ethers.formatEther(game.gamePrice)} ETH</p>
+              <p className="text-xl font-semibold">Price: {ethers.formatEther(game.gamePrice)} WEI</p>
             </div>
             <button
               onClick={() => handleBuy(game.gameId, game.gamePrice)}

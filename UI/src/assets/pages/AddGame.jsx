@@ -172,7 +172,7 @@ const AddGame = () => {
                 </div>
 
                 <div className="mb-4">
-                    <label htmlFor="game_price" className="block text-sm mb-2">Game Price (in Ether)</label>
+                    <label htmlFor="game_price" className="block text-sm mb-2">Game Price (in WEI)</label>
                     <input
                         type="text"
                         id="game_price"

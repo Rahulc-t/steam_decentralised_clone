@@ -1,116 +1,111 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ethers } from 'ethers';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-
+  const [walletAddress, setWalletAddress] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const adminAddress = '0x12c3400D039242DbB7AF5c11BC9AA40718f06457'; // Admin wallet address
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(null); // Clear any previous errors
-    setLoading(true); // Show loading state
+  // Function to connect to MetaMask or any Web3 wallet
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        setLoading(true);
 
-    const dataToSend = {
-      email: formData.email,
-      password: formData.password,
-    };
+        // Request access to the user's MetaMask wallet
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        await provider.send('eth_requestAccounts', []); // Request to connect accounts
 
-    try {
-      const response = await fetch('http://localhost:5000/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),
-      });
-
-      const result = await response.json();
-      console.log(result)
-      if (response.ok) {
-        // Login successful, store token if needed
-        localStorage.setItem('token', result.token); // Save token in localStorage or cookies
+        const signer = await provider.getSigner();
+        const address = await signer.getAddress(); // Get the wallet address of the connected user
+        setWalletAddress(address);
 
         setLoading(false);
-
-        // Check usertype from response and navigate accordingly
-        if (result.userType === 'admin') {
-          navigate('/admin');
-        } else {
-          navigate('/profile');
-        }
-
-      } else {
-        // Handle error from server
-        setError(result.message);
+      } catch (error) {
+        setError('Failed to connect wallet');
         setLoading(false);
       }
-    } catch (err) {
-      // Handle any network or other errors
-      setError('An error occurred during login');
-      setLoading(false);
+    } else {
+      setError('MetaMask not detected. Please install MetaMask and try again.');
     }
   };
+
+  // Check if user is admin or user and redirect accordingly
+  const handleLogin = () => {
+    if (!walletAddress) {
+      setError('No wallet connected. Please connect your wallet.');
+      return;
+    }
+
+    // If the connected wallet is the admin's wallet
+    if (walletAddress.toLowerCase() === adminAddress.toLowerCase()) {
+      navigate('/admin');
+    } else {
+      // If it's not the admin address, treat as a regular user
+      navigate('/profile');
+    }
+  };
+
+  // Deny access if wallet not connected
+  // const denyAccess = () => {
+  //   if (!walletAddress) {
+  //     setError('Access denied. Please connect a wallet.');
+  //   }
+  // };
+
+  // Automatically connect wallet on component mount if MetaMask is available
+  useEffect(() => {
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', (accounts) => {
+        setWalletAddress(accounts[0] || null); // Set wallet address or null if disconnected
+      });
+    }
+  }, []);
 
   return (
     <div className="bg-gray-800 text-white py-8 px-10 rounded-lg w-96 mx-auto my-20">
       <h2 className="text-2xl mb-6">Sign in</h2>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {error && <p className="text-red-500">{error}</p>}
-        <div>
-          <label htmlFor="email" className="block text-sm font-semibold mb-2">SIGN IN WITH EMAIL</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"
-            placeholder="Email"
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password" className="block text-sm font-semibold mb-2">PASSWORD</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"
-            placeholder="Password"
-            required
-          />
-        </div>
-        <div className="flex items-center justify-between">
-          <div>
-            <input type="checkbox" id="remember-me" />
-            <label htmlFor="remember-me" className="ml-2 text-sm">Remember me</label>
-          </div>
-          <a href="/forgot-password" className="text-sm text-blue-300 hover:text-blue-400">Help, I can't sign in</a>
-        </div>
+
+      {!walletAddress ? (
+        <>
+          {error && <p className="text-red-500">{error}</p>}
+          <button
+            onClick={connectWallet}
+            className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            disabled={loading}
+          >
+            {loading ? 'Connecting Wallet...' : 'Connect Wallet'}
+          </button>
+        </>
+      ) : (
+        <>
+          <p className="mb-4">Wallet Connected: {walletAddress}</p>
+
+          <button
+            onClick={handleLogin}
+            className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          >
+            Log in
+          </button>
+
+          {walletAddress.toLowerCase() !== adminAddress.toLowerCase() && (
+            <p className="mt-4 text-sm text-gray-300">You are logging in as a regular user.</p>
+          )}
+        </>
+      )}
+
+      {/* <div className="mt-6">
         <button
-          type="submit"
-          className="w-full mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-          disabled={loading}
+          onClick={denyAccess}
+          className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
         >
-          {loading ? 'Signing in...' : 'Sign in'}
+          Deny Access
         </button>
-      </form>
+      </div> */}
     </div>
   );
 };
