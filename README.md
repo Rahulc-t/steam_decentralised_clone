@@ -2,6 +2,9 @@
 
 A decentralized application (DApp) for managing and purchasing games using Ethereum smart contracts. This project allows users to add games to a blockchain and purchase them using Ether.
 
+## DEMO VIDEO:
+[![SteamClone](https://img.youtube.com/vi/TTffq0X2WVg/0.jpg)](https://youtu.be/udjC9NSG5MM?si=xxPT78NRcki5UTth)
+
 ## Features
 
 - **Add Games**: Admins can add new games to the blockchain.
@@ -69,11 +72,6 @@ A decentralized application (DApp) for managing and purchasing games using Ether
 Make sure your MetaMask wallet is connected and has enough Ether for transactions.
 
 ## Scheduled Updates
-
-### Updates for september 
-
-1. **Implement Image Insertion**
-   - Allow for the insertion and display of images within the application.
 
 ### Future Update
 
