@@ -3,8 +3,7 @@
 A decentralized application (DApp) for managing and purchasing games using Ethereum smart contracts. This project allows users to add games to a blockchain and purchase them using Ether.
 
 ## DEMO VIDEO:
-[[SteamClone]](https://youtu.be/udjC9NSG5MM?si=xxPT78NRcki5UTth)
-[![SteamClone](https://img.youtube.com/vi/udjC9NSG5MM?si=xxPT78NRcki5UTth/0.jpg)](https://youtu.be/udjC9NSG5MM?si=xxPT78NRcki5UTth)
+[![SteamClone](https://img.youtube.com/vi/udjC9NSG5MM/0.jpg)](https://youtu.be/udjC9NSG5MM)
 
 ## Features
 
